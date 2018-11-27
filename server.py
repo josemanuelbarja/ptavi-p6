@@ -30,16 +30,19 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             if not line or '\n':
                 break
         method = str.upper(line.decode('utf-8').split(" ")[0])
-        if method == 'INVITE':
-            self.wfile.write(b'SIP/2.0 100 Trying\r\n\r\n')
-            self.wfile.write(b'SIP/2.0 180 Ring\r\n\r\n')
-            self.wfile.write(b'SIP/2.0 200 OK\r\n\r\n')
-        elif method == 'ACK':
-            os.system(MP32RTP)
-        elif method == 'BYE':
-            self.wfile.write(b'SIP/2.0 200 OK \r\n\r\n')
+        if len(line.decode('utf-8').split(" ")) == 3:
+            if method == 'INVITE':
+                self.wfile.write(b'SIP/2.0 100 Trying\r\n\r\n')
+                self.wfile.write(b'SIP/2.0 180 Ring\r\n\r\n')
+                self.wfile.write(b'SIP/2.0 200 OK\r\n\r\n')
+            elif method == 'ACK':
+                os.system(MP32RTP)
+            elif method == 'BYE':
+                self.wfile.write(b'SIP/2.0 200 OK \r\n\r\n')
+            else:
+                self.wfile.write(b'SIP/2.0 405 Method not Allowed\r\n\r\n')
         else:
-            self.wfile.write(b'SIP/2.0 405 Method not Allowed\r\n\r\n')
+            self.wfile.write(b'SIP/2.0 400 Bad Request\r\n')
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
